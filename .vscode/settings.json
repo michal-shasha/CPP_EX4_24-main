@@ -1,6 +1,7 @@
 {
     "files.associations": {
-      "*.tpp" : "cpp",
+      "*.hpp": "cpp",
+      "*.tpp": "cpp",
       "vector": "cpp",
       "ostream": "cpp",
       "array": "cpp",
@@ -46,7 +47,18 @@
       "stdexcept": "cpp",
       "streambuf": "cpp",
       "typeinfo": "cpp",
-      "ctime": "cpp"
+      "ctime": "cpp",
+      "chrono": "cpp",
+      "condition_variable": "cpp",
+      "csignal": "cpp",
+      "cstring": "cpp",
+      "set": "cpp",
+      "unordered_set": "cpp",
+      "ratio": "cpp",
+      "iomanip": "cpp",
+      "mutex": "cpp",
+      "thread": "cpp",
+      "stack": "cpp"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/clang++",
     "makefile.launchConfigurations": [

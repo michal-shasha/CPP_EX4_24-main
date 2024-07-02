@@ -1,7 +1,12 @@
+//325763498
+//michalshasha8@gmail.com
+
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
 #include <iostream>
+#include <stdexcept>
+#include <cmath>
 
 class Complex {
 private:
@@ -10,29 +15,29 @@ private:
 
 public:
     // Constructor
-    Complex(double r, double i) : real(r), imag(i) {}
+    Complex(double r = 0.0, double i = 0.0);
 
     // Getters
-    double get_real() const ;
-    double get_imag() const ;
+    double getReal() const;
+    double getImag() const;
 
     // Setters
-    void set_real(double r) ;
-    void set_imag(double i) ;
+    void setReal(double r);
+    void setImag(double i);
 
-    // Overloaded operators
-    Complex operator+(const Complex& other) const ;
-    Complex operator-(const Complex& other) const ;
-    Complex operator*(const Complex& other) const ;
-    Complex operator/(const Complex& other) const ;
-    bool operator==(const Complex& other) const ;
-    bool operator!=(const Complex& other) const ;
+    // Operator Overloads
+    Complex operator+(const Complex& other) const;
+    Complex operator-(const Complex& other) const;
+    Complex operator*(const Complex& other) const;
+    Complex operator/(const Complex& other) const;
+    bool operator<(const Complex& other) const;
+    bool operator>(const Complex& other) const;
+    bool operator==(const Complex& other) const;
+    bool operator!=(const Complex& other) const;
+    Complex operator-() const;
 
-    // Overloaded output operator for easy printing
-    friend std::ostream& operator<<(std::ostream& os, const Complex& c) {
-        os << c.real << " + " << c.imag << "i";
-        return os;
-    }
+    // Friend Function for Output Stream
+    friend std::ostream& operator<<(std::ostream& out, const Complex& c);
 };
 
 #endif // COMPLEX_HPP

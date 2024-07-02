@@ -1,10 +1,13 @@
+//325763498
+//michalshasha8@gmail.com
+
 #ifndef TREEITERATOR_TPP
 #define TREEITERATOR_TPP
 
 #include "TreeIterator.hpp"
 
-template<typename T>
-TreeIterator<T>::TreeIterator(std::shared_ptr<Node<T>> root, TreeIteratorType type) : type(type) {
+template<typename T, size_t K>
+TreeIterator<T, K>::TreeIterator(std::shared_ptr<Node<T>> root, TreeIteratorType type) : type(type) {
     if (root) {
         switch (type) {
             case TreeIteratorType::PRE_ORDER:
@@ -21,14 +24,17 @@ TreeIterator<T>::TreeIterator(std::shared_ptr<Node<T>> root, TreeIteratorType ty
                 break;
             case TreeIteratorType::DFS:
                 traverse_dfs(root);
-                break;    
+                break;  
+            case TreeIteratorType::HEAP:
+                traverse_heap(root);
+                break;  
         }
     }
     current = queue.empty() ? nullptr : queue.front();
 }
 
-template<typename T>
-TreeIterator<T>& TreeIterator<T>::operator++() {
+template<typename T, size_t K>
+TreeIterator<T, K>& TreeIterator<T, K>::operator++() {
     if (!queue.empty()) {
         queue.pop();
         current = queue.empty() ? nullptr : queue.front();
@@ -36,31 +42,78 @@ TreeIterator<T>& TreeIterator<T>::operator++() {
     return *this;
 }
 
-template<typename T>
-bool TreeIterator<T>::operator!=(const TreeIterator<T>& other) const {
+template<typename T, size_t K>
+bool TreeIterator<T, K>::operator!=(const TreeIterator<T, K>& other) const {
     return current != other.current;
 }
 
+template<typename T, size_t K>
+Node<T>* TreeIterator<T, K>::operator->() {
+    return current.get();
+}
 
-template<typename T>
-std::shared_ptr<Node<T>> TreeIterator<T>::operator*() {
+template<typename T, size_t K>
+std::shared_ptr<Node<T>> TreeIterator<T, K>::operator*() {
     return current;
 }
 
-
-template<typename T>
-void TreeIterator<T>::traverse_pre_order(std::shared_ptr<Node<T>> node) {
+template <typename T, size_t K>
+void TreeIterator<T, K>::flatten_to_vector(std::shared_ptr<Node<T>> node, std::vector<std::shared_ptr<Node<T>>>& nodes) {
     if (!node) return;
 
+    nodes.push_back(node); // Push shared_ptr to node
+
+    for (const auto& child : node->get_children()) {
+        flatten_to_vector(child, nodes);
+    }
+}
+
+template<typename T, size_t K>
+void TreeIterator<T, K>::traverse_heap(std::shared_ptr<Node<T>> node) {
+
+    std::vector<std::shared_ptr<Node<T>>> nodes;
+
+    // Step 1: Flatten the tree starting from the given node into a vector
+    flatten_to_vector(node, nodes); // Assuming you have a function to flatten into 'nodes'
+
+    // Step 2: Convert the flattened vector into a min-heap
+    std::make_heap(nodes.begin(), nodes.end(), [](const std::shared_ptr<Node<T>>& a, const std::shared_ptr<Node<T>>& b) {
+        return a->get_value() < b->get_value(); // Min-heap: smallest value at the top
+    });
+    std::sort_heap(nodes.begin(), nodes.end(), [](const std::shared_ptr<Node<T>>& a, const std::shared_ptr<Node<T>>& b) {
+        return a->get_value() < b->get_value(); // Sort in ascending order
+    });
+    // Step 3: Traverse the heap (if needed)
+    for (const auto& n : nodes) {
+        queue.push(n); // Assuming queue is a member variable of TreeIterator to store heap nodes
+    }
+
+    // Step 4: Initialize current pointer (assuming queue is not empty)
+    current = queue.empty() ? nullptr : queue.front();
+}
+
+template<typename T, size_t K>
+void TreeIterator<T, K>::traverse_pre_order(std::shared_ptr<Node<T>> node) {
+    if (!node) return;
+    // If K is greater than 2, use dfs
+    if (K > 2) {
+        traverse_dfs(node);
+        return;
+    }
     queue.push(node);
     for (auto child : node->get_children()) {
         traverse_pre_order(child);
     }
 }
 
-template<typename T>
-void TreeIterator<T>::traverse_post_order(std::shared_ptr<Node<T>> node) {
+template<typename T, size_t K>
+void TreeIterator<T, K>::traverse_post_order(std::shared_ptr<Node<T>> node) {
     if (node) {
+        // If K is greater than 2, use dfs
+        if (K > 2) {
+          traverse_dfs(node);
+          return;
+        }
         for (auto child : node->get_children()) {
             traverse_post_order(child);
         }
@@ -68,8 +121,8 @@ void TreeIterator<T>::traverse_post_order(std::shared_ptr<Node<T>> node) {
     }
 }
 
-template<typename T>
-void TreeIterator<T>::traverse_in_order(std::shared_ptr<Node<T>> node) {
+template<typename T, size_t K>
+void TreeIterator<T, K>::traverse_in_order(std::shared_ptr<Node<T>> node) {
     if (node) {
         auto children = node->get_children();
         if (!children.empty()) {
@@ -82,37 +135,8 @@ void TreeIterator<T>::traverse_in_order(std::shared_ptr<Node<T>> node) {
     }
 }
 
-
-// template<typename T>
-// void TreeIterator<T>::traverse_bfs(std::shared_ptr<Node<T>> node) {
-//     if (node) {
-//         queue.push(node);
-//         while (!queue.empty()) {
-//             auto current = queue.front();
-//             queue.pop();
-//             auto children = current->get_children();
-//             for (auto child : children) {
-//                 queue.push(child);
-//             }
-//             stack.push(current); // Push to stack for use in BFS traversal if needed
-//         }
-//     }
-// }
-
-// template<typename T>
-// void TreeIterator<T>::traverse_dfs(std::shared_ptr<Node<T>> node) {
-//     if (node) {
-//         stack.push(node);
-//         auto children = node->get_children();
-//         for (auto it = children.rbegin(); it != children.rend(); ++it) {
-//             traverse_dfs(*it);
-//         }
-//     }
-// }
-
-
-template<typename T>
-void TreeIterator<T>::traverse_bfs(std::shared_ptr<Node<T>> node) {
+template<typename T, size_t K>
+void TreeIterator<T, K>::traverse_bfs(std::shared_ptr<Node<T>> node) {
     if (!node) return;
     std::queue<std::shared_ptr<Node<T>>> bfs_queue;
     bfs_queue.push(node);
@@ -128,8 +152,8 @@ void TreeIterator<T>::traverse_bfs(std::shared_ptr<Node<T>> node) {
     }
 }
 
-template<typename T>
-void TreeIterator<T>::traverse_dfs(std::shared_ptr<Node<T>> node) {
+template<typename T, size_t K>
+void TreeIterator<T, K>::traverse_dfs(std::shared_ptr<Node<T>> node) {
     if (!node) return;
     std::deque<std::shared_ptr<Node<T>>> deque;
     deque.push_front(node);
@@ -145,55 +169,5 @@ void TreeIterator<T>::traverse_dfs(std::shared_ptr<Node<T>> node) {
         }
     }
 }
-
-
-
-template<typename T>
-void TreeIterator<T>::heapify(std::shared_ptr<Node<T>> node) {
-    if (!node) return;
-
-    auto smallest = node;
-    auto left = node->get_left_child();
-    auto right = node->get_right_child();
-
-    // Compare with left child
-    if (left && left->get_value() < smallest->get_value()) {
-        smallest = left;
-    }
-
-    // Compare with right child
-    if (right && right->get_value() < smallest->get_value()) {
-        smallest = right;
-    }
-
-    // If the smallest is not the current node, swap values and recursively heapify
-    if (smallest != node) {
-        std::swap(node->value, smallest->value);
-        heapify(smallest); // Recursively heapify the affected subtree
-    }
-}
-
-template<typename T>
-void TreeIterator<T>::convert_to_min_heap() {
-    if (!current) return;
-
-    std::queue<std::shared_ptr<Node<T>>> q;
-    q.push(current);
-
-    while (!q.empty()) {
-        auto node = q.front();
-        q.pop();
-
-        // Apply heapify to the current node
-        heapify(node);
-
-        // Enqueue children for further processing
-        auto left = node->get_left_child();
-        auto right = node->get_right_child();
-        if (left) q.push(left);
-        if (right) q.push(right);
-    }
-}
-
 
 #endif // TREEITERATOR_TPP

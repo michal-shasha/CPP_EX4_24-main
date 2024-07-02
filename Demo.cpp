@@ -1,3 +1,6 @@
+//325763498
+//michalshasha8@gmail.com
+
 #include <iostream>
 #include "Node.hpp"
 #include "Tree.hpp"
@@ -21,6 +24,16 @@ int main() {
     tree.add_sub_node(n1, n3);
     tree.add_sub_node(n1, n4);
     tree.add_sub_node(n2, n5);
+
+    //The tree should look like:
+    /**
+    *       root = 1.1
+    *     /       \
+    *    1.2      1.3
+    *   /  \      /
+    *  1.4  1.5  1.6
+    */
+    tree.handle_window();
 
     // Print traversals
     cout << "Pre-order traversal: ";
@@ -56,6 +69,7 @@ int main() {
     cout << "Tree structure (operator<<):" << endl;
     cout << tree << endl;
 
+
     // 3-ary tree example
     Node<double> root_node2(1.1);
     Tree<double, 3> three_ary_tree;
@@ -73,21 +87,7 @@ int main() {
     three_ary_tree.add_sub_node(n6, n9);
     three_ary_tree.add_sub_node(n7, n10);
 
-
-    // Convert to min-heap and print the tree structure again
-    cout << "Converting tree to min-heap..." << endl;
-    TreeIterator<double> iterator(tree.get_root(), TreeIterator<double>::Order::BFS);
-    iterator.convert_to_min_heap();
-
-    cout << "Tree structure after converting to min-heap:" << endl;
-    cout << tree << endl;
-
-
-    return 0;
-}
-
-
-    // The 3-ary tree should look like:
+    //The tree should look like:
     /**
      *       root = 1.1
      *     /      |     \
@@ -95,7 +95,19 @@ int main() {
      *   /        |
      *  1.5      1.6
      */
+    
+    three_ary_tree.handle_window();
 
+
+    cout << "HEAP traversal: ";
+    for (auto node = tree.begin_heap(); node != tree.end_heap(); ++node) {
+        cout << (*node)->get_value() << " ";
+    }
+    cout << endl;
+
+
+    return 0;
+}
 
 // Output
 
@@ -106,4 +118,5 @@ int main() {
 // Range-based loop (same as BFS):1.1, 1.2, 1.3, 1.4, 1.5, 1.6
 // Tree structure (operator<<):
 // 1.1 -> 1.2 -> 1.4 -> 1.5 -> 1.3 -> 1.6
+// Heap traversal: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6
 

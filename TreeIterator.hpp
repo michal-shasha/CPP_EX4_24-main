@@ -1,3 +1,6 @@
+//325763498
+//michalshasha8@gmail.com
+
 #ifndef TREEITERATOR_HPP
 #define TREEITERATOR_HPP
 
@@ -11,23 +14,21 @@ enum class TreeIteratorType {
     POST_ORDER,
     IN_ORDER,
     BFS,
-    DFS
+    DFS,
+    HEAP
 };
 
-template<typename T>
+template<typename T, size_t K>
 class TreeIterator {
 public:
     TreeIterator(std::shared_ptr<Node<T>> root, TreeIteratorType type);
 
-    bool operator!=(const TreeIterator<T>& other) const;
-
-    TreeIterator<T>& operator++();
-
+    TreeIterator& operator++();
+    bool operator!=(const TreeIterator& other) const;
     std::shared_ptr<Node<T>> operator*();
+    Node<T>* operator->();
+    void flatten_to_vector(std::shared_ptr<Node<T>> node, std::vector<std::shared_ptr<Node<T>>>& nodes);
 
-    void heapify(std::shared_ptr<Node<T>> node);
-
-    void convert_to_min_heap();
 
 private:
     void traverse_pre_order(std::shared_ptr<Node<T>> node);
@@ -39,6 +40,8 @@ private:
     void traverse_bfs(std::shared_ptr<Node<T>> node);
 
     void traverse_dfs(std::shared_ptr<Node<T>> node);
+
+    void traverse_heap(std::shared_ptr<Node<T>> node);
 
     
 

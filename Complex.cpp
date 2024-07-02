@@ -1,28 +1,30 @@
-#ifndef COMPLEX_TPP
-#define COMPLEX_TPP
+//325763498
+//michalshasha8@gmail.com
 
 #include "Complex.hpp"
-#include <stdexcept>
-#include <cmath>
 
+// Constructor
 Complex::Complex(double r, double i) : real(r), imag(i) {}
 
-double Complex::get_real() const {
+// Getters
+double Complex::getReal() const {
     return real;
 }
 
-double Complex::get_imag() const {
+double Complex::getImag() const {
     return imag;
 }
 
-void Complex::set_real(double r) {
+// Setters
+void Complex::setReal(double r) {
     real = r;
 }
 
-void Complex::set_imag(double i) {
+void Complex::setImag(double i) {
     imag = i;
 }
 
+// Operator Overloads
 Complex Complex::operator+(const Complex& other) const {
     return Complex(real + other.real, imag + other.imag);
 }
@@ -44,6 +46,14 @@ Complex Complex::operator/(const Complex& other) const {
                    (imag * other.real - real * other.imag) / denominator);
 }
 
+bool Complex::operator<(const Complex& other) const {
+    return std::sqrt(real * real + imag * imag) < std::sqrt(other.real * other.real + other.imag * other.imag);
+}
+
+bool Complex::operator>(const Complex& other) const {
+    return std::sqrt(real * real + imag * imag) > std::sqrt(other.real * other.real + other.imag * other.imag);
+}
+
 bool Complex::operator==(const Complex& other) const {
     return real == other.real && imag == other.imag;
 }
@@ -52,10 +62,12 @@ bool Complex::operator!=(const Complex& other) const {
     return !(*this == other);
 }
 
-std::ostream& operator<<(std::ostream& os, const Complex& c) {
-    os << c.real << " + " << c.imag << "i";
-    return os;
+Complex Complex::operator-() const {
+    return Complex(-real, -imag);
 }
 
-#endif // COMPLEX_TPP
-
+// Friend Function for Output Stream
+std::ostream& operator<<(std::ostream& out, const Complex& c) {
+    out << c.real << " + " << c.imag << "i";
+    return out;
+}
